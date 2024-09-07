@@ -1,0 +1,52 @@
+<!--
+    CS 435
+    Project 2
+    Alex Khachadoorian
+    FIXME: description
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+        <title>
+            CS 435 
+            Project #2
+            Alex Khachadoorian
+        </title>
+
+        <!--Fragment Shader Script-->
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            #version 300 es
+
+            in vec4 aPosition;
+
+            void main() {
+                gl_Position = aPosition;
+            }
+
+        </script>
+
+        <!--Vertex Shader Script-->
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            #version 300 es
+            
+            precision mediump float;
+            
+            uniform vec4 uColor;
+            
+            out vec4 fColor;
+            
+            void main() {
+                fColor = uColor;
+            }
+        </script>
+
+        <!--Other Additional Scripts-->
+        <script type="text/javascript" src="../Common/initShaders.js"></script>
+        <script type="text/javascript" src="../Common/MVnew.js"></script>
+
+        <!--My Javascript-->
+        <script type="text/javascript" src="tetris.js"></script>
+    </head>
+</html>
