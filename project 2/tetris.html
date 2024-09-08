@@ -21,13 +21,15 @@
             
             in vec4 aPosition;
             in vec4 aColor;
+
+            uniform mat4 projection;
             
             out vec4 vColor;
             
             void main()
             {
-                gl_Position = aPosition;
-                vColor=aColor;
+                gl_Position = projection*aPosition;
+                vColor = aColor;
             }
             </script>
 

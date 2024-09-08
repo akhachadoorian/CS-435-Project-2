@@ -105,10 +105,10 @@ function CPiece (n, color, x0, y0, x1, y1, x2, y2, x3, y3) {
 
     this.draw = function() {
       //find transformation matrix
-      var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0); 
-      tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
-      tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
-      gl.uniformMatrix4fv( transformation, gl.FALSE, flatten(tm) );
+      // var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0); 
+      // tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
+      // tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
+      // gl.uniformMatrix4fv( transformation, gl.FALSE, flatten(tm) );
 
       //supply data for vPosition
       gl.bindBuffer( gl.ARRAY_BUFFER, this.vBuffer );
@@ -272,13 +272,13 @@ window.onload = function initialize() {
 
     // Initial State
     Blocks=[];
-    // Blocks.push(new CPiece(3, vec4(1.0, 0.0, 0.0, 1.0), 400, 300, 300, 400, 300, 200, 0, 0));
-    // Blocks.push(new CPiece(3, vec4(0.0, 1.0, 0.0, 1.0), 400, 300, 300, 200, 500, 200, 0, 0));
-    // Blocks.push(new CPiece(3, vec4(0.0, 0.0, 1.0, 1.0), 500, 400, 400, 400, 500, 300, 0, 0));
-    // Blocks.push(new CPiece(3, vec4(1.0, 1.0, 0.0, 1.0), 400, 300, 450, 350, 350, 350, 0, 0));
-    // Blocks.push(new CPiece(3, vec4(1.0, 0.0, 1.0, 1.0), 450, 250, 500, 200, 500, 300, 0, 0));
+    Blocks.push(new CPiece(3, vec4(1.0, 0.0, 0.0, 1.0), 400, 300, 300, 400, 300, 200, 0, 0));
+    Blocks.push(new CPiece(3, vec4(0.0, 1.0, 0.0, 1.0), 400, 300, 300, 200, 500, 200, 0, 0));
+    Blocks.push(new CPiece(3, vec4(0.0, 0.0, 1.0, 1.0), 500, 400, 400, 400, 500, 300, 0, 0));
+    Blocks.push(new CPiece(3, vec4(1.0, 1.0, 0.0, 1.0), 400, 300, 450, 350, 350, 350, 0, 0));
+    Blocks.push(new CPiece(3, vec4(1.0, 0.0, 1.0, 1.0), 450, 250, 500, 200, 500, 300, 0, 0));
     Blocks.push(new CPiece(4, vec4(0.0, 1.0, 1.0, 1.0), 400, 300, 450, 250, 500, 300, 450, 350));
-    // Blocks.push(new CPiece(4, vec4(0.0, 0.0, 0.0, 1.0), 300, 400, 350, 350, 450, 350, 400, 400));
+    Blocks.push(new CPiece(4, vec4(0.0, 0.0, 0.0, 1.0), 300, 400, 350, 350, 450, 350, 400, 400));
 
     for (var i=0; i<Blocks.length; i++) {
         Blocks[i].init();

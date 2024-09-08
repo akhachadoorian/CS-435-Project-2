@@ -10,6 +10,7 @@ var gl;
 
 var vPosition; // loc of attribute variables
 var vColor;
+var projection;
 
 var Blocks;
 
@@ -43,6 +44,13 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     }
 
     this.draw = function() {
+
+    //     //find transformation matrix
+    //   var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0); 
+    //   tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
+    //   tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
+    //   gl.uniformMatrix4fv( transformation, gl.FALSE, flatten(tm) );
+
         //supply data for vPosition
       gl.bindBuffer( gl.ARRAY_BUFFER, this.vBuffer );
       gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
@@ -53,14 +61,10 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
       gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
       gl.enableVertexAttribArray( vColor );
 
-        console.log("drawing");
 
         gl.drawArrays( gl.TRIANGLE_FAN, 0, 4);
     }
 }
-
-
-
 
 //main
 window.onload = function initialize() {
@@ -76,14 +80,18 @@ window.onload = function initialize() {
     gl.useProgram(program);
 
     Blocks=[];
-    Blocks.push(new Tetrimino(vec4(0.0, 0.0, 0.0, 1.0), 300, 400, 350, 350, 450, 350, 400, 400));
+    // Blocks.push(new Tetrimino(vec4(0.0, 0.0, 0.0, 1.0), -1,-1, 1,-1, 1,1,1,0));
     Blocks.push(new Tetrimino(vec4(0.0, 1.0, 1.0, 1.0), 400, 300, 450, 250, 500, 300, 450, 350));
 
     for (var i=0; i<Blocks.length; i++) {
-        console.log("init");
         Blocks[i].init();
     }
 
+    projection = gl.getUniformLocation( program, "projection" );
+    var pm = ortho( 0.0, canvas.width, 0.0, canvas.height, -1.0, 1.0 );
+    gl.uniformMatrix4fv( projection, gl.FALSE, flatten(pm) );
+
+    // transformation = gl.getUniformLocation( program, "transformation" );
     vPosition = gl.getAttribLocation( program, "aPosition" );
     vColor = gl.getAttribLocation( program, "aColor" );
 
