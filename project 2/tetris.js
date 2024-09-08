@@ -81,7 +81,7 @@ window.onload = function initialize() {
 
     Blocks=[];
     // Blocks.push(new Tetrimino(vec4(0.0, 0.0, 0.0, 1.0), -1,-1, 1,-1, 1,1,1,0));
-    Blocks.push(new Tetrimino(vec4(0.0, 1.0, 1.0, 1.0), 400, 300, 450, 250, 500, 300, 450, 350));
+    Blocks.push(new Tetrimino(vec4(0.0, 1.0, 1.0, 1.0), 200, 300, 200, 200, 300, 200, 300, 300));
 
     for (var i=0; i<Blocks.length; i++) {
         Blocks[i].init();
