@@ -35,6 +35,15 @@ function buildTop(color, bottomLeft, bottomRight) {
     return temp;
 }
 
+function buildBottom(color, topLeft, topRight) {
+    var bottomRight = add(topRight, vec2(0, -tetriminoSize));
+    var bottomLeft = add(topLeft, vec2(0, -tetriminoSize));
+
+    var temp = new Tetrimino(color, bottomLeft[0], bottomLeft[1], topLeft[0], topLeft[1], topRight[0], topRight[1], bottomRight[0], bottomRight[1]);
+
+    return temp;
+}
+
 function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     //class variables
     this.color = color;
@@ -272,6 +281,15 @@ function rightZTetrimino(color) {
         this.rightZs.push(new Tetrimino(this.color, rightZPointStart[0][0], rightZPointStart[0][1], rightZPointStart[1][0], rightZPointStart[1][1], rightZPointStart[2][0], rightZPointStart[2][1], rightZPointStart[3][0], rightZPointStart[3][1]));
 
         this.rightZs[0].init();
+
+        this.rightZs.push(buildRight(this.color, rightZPointStart[3], rightZPointStart[2]));
+        this.rightZs[1].init();
+
+        this.rightZs.push(buildTop(this.color, this.rightZs[1].topLeft(), this.rightZs[1].topRight()));
+        this.rightZs[2].init();
+
+        this.rightZs.push(buildRight(this.color, this.rightZs[2].bottomRight(), this.rightZs[2].topRight()));
+        this.rightZs[3].init();
     }
 
     this.draw = function() {
@@ -286,7 +304,19 @@ function leftZTetrimino(color) {
     this.leftZs = [];
 
     this.init = function() {
+        this.leftZs.push(new Tetrimino(this.color, leftZPointStart[0][0], leftZPointStart[0][1], leftZPointStart[1][0], leftZPointStart[1][1], leftZPointStart[2][0], leftZPointStart[2][1], leftZPointStart[3][0], leftZPointStart[3][1]));
+
+        this.leftZs[0].init();
         
+        this.leftZs.push(buildRight(this.color, leftZPointStart[3], leftZPointStart[2]));
+        this.leftZs[1].init();
+
+        this.leftZs.push(buildBottom(this.color, this.leftZs[1].bottomLeft(), this.leftZs[1].bottomRight()));
+        this.leftZs[2].init();
+
+        this.leftZs.push(buildRight(this.color, this.leftZs[2].bottomRight(), this.leftZs[2].topRight()));
+        this.leftZs[3].init();
+
     }
 
     this.draw = function() {
@@ -316,7 +346,7 @@ window.onload = function initialize() {
     Blocks.push(new rightLTetrimino(vec4(1.0, 0.2, 0.0, 0.5)));
     Blocks.push(new leftLTetrimino(vec4(0.2, 0.0, 1.0, 0.5)));
     Blocks.push(new rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.3)));
-    // Blocks.push(new leftzTetrimino(vec4(0.5, 0.0, 0.0, 0.5)));
+    Blocks.push(new leftZTetrimino(vec4(0.8, 0.1, 0.8, 0.5)));
 
     for (var i=0; i<Blocks.length; i++) {
         Blocks[i].init();
@@ -382,4 +412,11 @@ var rightZPointStart = [
     vec2( 1050, 100),
     vec2( 1100, 100),
     vec2( 1100, 50)
+]
+
+var leftZPointStart = [
+    vec2( 1250, 100),
+    vec2( 1250, 150),
+    vec2( 1300, 150),
+    vec2( 1300, 100)
 ]
