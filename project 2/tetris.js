@@ -14,7 +14,8 @@ var projection;
 
 var Blocks;
 
-var tetriminoSize = 50;
+var tetriminoSize = 25;
+var innerSize = 5;
 
 
 function buildRight(color, bottomLeft, topLeft) {
@@ -63,10 +64,10 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     for (var i=0; i<4; i++) this.colors.push(vec4(0.0, 0.0, 0.0, 1.0));
 
     //inside square
-    this.points.push(vec2(x0 + 10, y0 + 10));
-    this.points.push(vec2(x1 + 10, y1 - 10));
-    this.points.push(vec2(x2 - 10, y2 - 10));
-    this.points.push(vec2(x3 - 10, y3 + 10));
+    this.points.push(vec2(x0 + innerSize, y0 + innerSize));
+    this.points.push(vec2(x1 + innerSize, y1 - innerSize));
+    this.points.push(vec2(x2 - innerSize, y2 - innerSize));
+    this.points.push(vec2(x3 - innerSize, y3 + innerSize));
     var b = add(color, vec4(0.0, 0.0, 0.0, 0.3)); //FIXME: add another parameter for inside color?
 
     for (var i=0; i<4; i++) this.colors.push(b);
@@ -129,16 +130,16 @@ function squareTetrimino(color) {
     
     this.init = function() {
         //create bottom left tetrimino
-        this.squares.push(new Tetrimino(color, squarePointsStart[0][0], squarePointsStart[0][1], squarePointsStart[1][0],squarePointsStart[1][1], squarePointsStart[2][0], squarePointsStart[2][1],squarePointsStart[3][0], squarePointsStart[3][1]));
+        this.squares.push(new Tetrimino(color, squarePoints[0][0], squarePoints[0][1], squarePoints[1][0],squarePoints[1][1], squarePoints[2][0], squarePoints[2][1],squarePoints[3][0], squarePoints[3][1]));
 
         this.squares[0].init();
 
         //create bottom right tetrimino
-        this.squares.push(buildRight(this.color, squarePointsStart[3], squarePointsStart[2]));
+        this.squares.push(buildRight(this.color, squarePoints[3], squarePoints[2]));
         this.squares[1].init();
 
         //create top left tetrimino
-        this.squares.push(buildTop(this.color, squarePointsStart[1], squarePointsStart[2]));
+        this.squares.push(buildTop(this.color, squarePoints[1], squarePoints[2]));
 
         this.squares[2].init();
 
@@ -160,12 +161,12 @@ function lineTetrimino(color) {
 
     this.init = function() {
         //first block
-        this.lines.push(new Tetrimino(color, linePointStart[0][0], linePointStart[0][1], linePointStart[1][0], linePointStart[1][1], linePointStart[2][0], linePointStart[2][1], linePointStart[3][0], linePointStart[3][1]));
+        this.lines.push(new Tetrimino(color, linePoints[0][0], linePoints[0][1], linePoints[1][0], linePoints[1][1], linePoints[2][0], linePoints[2][1], linePoints[3][0], linePoints[3][1]));
 
         this.lines[0].init();
 
         //second block
-        this.lines.push(buildRight(this.color, linePointStart[3], linePointStart[2]));
+        this.lines.push(buildRight(this.color, linePoints[3], linePoints[2]));
         this.lines[1].init();
 
         
@@ -193,12 +194,12 @@ function rocketTetrimino(color) {
 
     this.init = function() {
         //first block
-        this.rockets.push(new Tetrimino(this.color, rocketPointStart[0][0], rocketPointStart[0][1], rocketPointStart[1][0], rocketPointStart[1][1], rocketPointStart[2][0], rocketPointStart[2][1], rocketPointStart[3][0], rocketPointStart[3][1]));
+        this.rockets.push(new Tetrimino(this.color, rocketPoints[0][0], rocketPoints[0][1], rocketPoints[1][0], rocketPoints[1][1], rocketPoints[2][0], rocketPoints[2][1], rocketPoints[3][0], rocketPoints[3][1]));
 
         this.rockets[0].init();
 
         //draw middle block
-        this.rockets.push(buildRight(this.color, rocketPointStart[3], rocketPointStart[2]));
+        this.rockets.push(buildRight(this.color, rocketPoints[3], rocketPoints[2]));
         this.rockets[1].init();
 
         //draw block above that
@@ -223,12 +224,12 @@ function rightLTetrimino(color) {
 
     this.init = function() {
         //first block
-        this.rightLs.push(new Tetrimino(this.color, rightLPointStart[0][0], rightLPointStart[0][1], rightLPointStart[1][0], rightLPointStart[1][1], rightLPointStart[2][0], rightLPointStart[2][1], rightLPointStart[3][0], rightLPointStart[3][1]));
+        this.rightLs.push(new Tetrimino(this.color, rightLPoints[0][0], rightLPoints[0][1], rightLPoints[1][0], rightLPoints[1][1], rightLPoints[2][0], rightLPoints[2][1], rightLPoints[3][0], rightLPoints[3][1]));
 
         this.rightLs[0].init();
 
         //build next piece
-        this.rightLs.push(buildRight(this.color, rightLPointStart[3], rightLPointStart[2]));
+        this.rightLs.push(buildRight(this.color, rightLPoints[3], rightLPoints[2]));
         this.rightLs[1].init();
 
         this.rightLs.push(buildRight(this.color, this.rightLs[1].bottomRight(), this.rightLs[1].topRight()));
@@ -251,15 +252,15 @@ function leftLTetrimino(color) {
     this.leftLs = [];
 
     this.init = function() {
-        this.leftLs.push(new Tetrimino(this.color, leftLPointStart[0][0], leftLPointStart[0][1], leftLPointStart[1][0], leftLPointStart[1][1], leftLPointStart[2][0], leftLPointStart[2][1], leftLPointStart[3][0], leftLPointStart[3][1]));
+        this.leftLs.push(new Tetrimino(this.color, leftLPoints[0][0], leftLPoints[0][1], leftLPoints[1][0], leftLPoints[1][1], leftLPoints[2][0], leftLPoints[2][1], leftLPoints[3][0], leftLPoints[3][1]));
 
         this.leftLs[0].init();
 
         //draw top
-        this.leftLs.push(buildTop(this.color, leftLPointStart[1], leftLPointStart[2]));
+        this.leftLs.push(buildTop(this.color, leftLPoints[1], leftLPoints[2]));
         this.leftLs[1].init();
 
-        this.leftLs.push(buildRight(this.color, leftLPointStart[3], leftLPointStart[2]));
+        this.leftLs.push(buildRight(this.color, leftLPoints[3], leftLPoints[2]));
         this.leftLs[2].init();
 
         this.leftLs.push(buildRight(this.color, this.leftLs[2].bottomRight(), this.leftLs[2].topRight()));
@@ -278,11 +279,11 @@ function rightZTetrimino(color) {
     this.rightZs = [];
 
     this.init = function() {
-        this.rightZs.push(new Tetrimino(this.color, rightZPointStart[0][0], rightZPointStart[0][1], rightZPointStart[1][0], rightZPointStart[1][1], rightZPointStart[2][0], rightZPointStart[2][1], rightZPointStart[3][0], rightZPointStart[3][1]));
+        this.rightZs.push(new Tetrimino(this.color, rightZPoints[0][0], rightZPoints[0][1], rightZPoints[1][0], rightZPoints[1][1], rightZPoints[2][0], rightZPoints[2][1], rightZPoints[3][0], rightZPoints[3][1]));
 
         this.rightZs[0].init();
 
-        this.rightZs.push(buildRight(this.color, rightZPointStart[3], rightZPointStart[2]));
+        this.rightZs.push(buildRight(this.color, rightZPoints[3], rightZPoints[2]));
         this.rightZs[1].init();
 
         this.rightZs.push(buildTop(this.color, this.rightZs[1].topLeft(), this.rightZs[1].topRight()));
@@ -304,11 +305,11 @@ function leftZTetrimino(color) {
     this.leftZs = [];
 
     this.init = function() {
-        this.leftZs.push(new Tetrimino(this.color, leftZPointStart[0][0], leftZPointStart[0][1], leftZPointStart[1][0], leftZPointStart[1][1], leftZPointStart[2][0], leftZPointStart[2][1], leftZPointStart[3][0], leftZPointStart[3][1]));
+        this.leftZs.push(new Tetrimino(this.color, leftZPoints[0][0], leftZPoints[0][1], leftZPoints[1][0], leftZPoints[1][1], leftZPoints[2][0], leftZPoints[2][1], leftZPoints[3][0], leftZPoints[3][1]));
 
         this.leftZs[0].init();
         
-        this.leftZs.push(buildRight(this.color, leftZPointStart[3], leftZPointStart[2]));
+        this.leftZs.push(buildRight(this.color, leftZPoints[3], leftZPoints[2]));
         this.leftZs[1].init();
 
         this.leftZs.push(buildBottom(this.color, this.leftZs[1].bottomLeft(), this.leftZs[1].bottomRight()));
@@ -340,12 +341,12 @@ window.onload = function initialize() {
     gl.useProgram(program);
 
     Blocks=[];
-    Blocks.push(new squareTetrimino(vec4(1.0, 1.0, 0.0, 0.3)));
+    Blocks.push(new squareTetrimino(vec4(0.7, 0.7, 0.0, 0.5)));
     Blocks.push(new lineTetrimino(vec4(0.0, 0.0, 1.0, 0.5)));
     Blocks.push(new rocketTetrimino(vec4(1.0, 0.0, 0.0, 0.5)));
     Blocks.push(new rightLTetrimino(vec4(1.0, 0.2, 0.0, 0.5)));
     Blocks.push(new leftLTetrimino(vec4(0.2, 0.0, 1.0, 0.5)));
-    Blocks.push(new rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.3)));
+    Blocks.push(new rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.5)));
     Blocks.push(new leftZTetrimino(vec4(0.8, 0.1, 0.8, 0.5)));
 
     for (var i=0; i<Blocks.length; i++) {
@@ -371,52 +372,53 @@ function render() {
     }
 }
 
-//FIXME:
-var squarePointsStart = [
-    vec2(50, 50),
-    vec2(50, 100),
-    vec2( 100, 100),
-    vec2( 100, 50)
-];
+//FIXME: points
+var squarePoints = [];
+var linePoints = [];
+var rocketPoints = [];
+var rightLPoints = [];
+var leftLPoints = [];
+var rightZPoints = [];
+var leftZPoints = [];
 
-var linePointStart = [
-    vec2( 200, 50),
-    vec2( 200, 100),
-    vec2( 250, 100),
-    vec2( 250, 50)
-];
+var curr = tetriminoSize;
+var highHeight = 600 - (tetriminoSize * 2);
+var lowHeight = 600 - (tetriminoSize * 3);
 
-var rocketPointStart = [
-    vec2( 450, 50),
-    vec2( 450, 100),
-    vec2( 500, 100),
-    vec2( 500, 50)
-];
+//fill squarePoints and update curr
+fillPoints(squarePoints);
+curr = curr + (tetriminoSize * 3);
 
-var rightLPointStart = [
-    vec2( 650, 50),
-    vec2( 650, 100),
-    vec2( 700, 100),
-    vec2( 700, 50)
-]
+//fill linePoints and update curr
+fillPoints(linePoints);
+curr = curr + (tetriminoSize * 5);
 
-var leftLPointStart = [
-    vec2( 850, 50),
-    vec2( 850, 100),
-    vec2( 900, 100),
-    vec2( 900, 50)
-]
+//fill rocketPoints and update curr
+fillPoints(rocketPoints);
+curr = curr + (tetriminoSize * 4);
 
-var rightZPointStart = [
-    vec2( 1050, 50),
-    vec2( 1050, 100),
-    vec2( 1100, 100),
-    vec2( 1100, 50)
-]
+//fill rightLPoints and update curr
+fillPoints(rightLPoints);
+curr = curr + (tetriminoSize * 4);
 
-var leftZPointStart = [
-    vec2( 1250, 100),
-    vec2( 1250, 150),
-    vec2( 1300, 150),
-    vec2( 1300, 100)
-]
+//fill leftLPoints and update curr
+fillPoints(leftLPoints);
+curr = curr + (tetriminoSize * 4);
+
+//fill rightZPoints and update curr
+fillPoints(rightZPoints);
+curr = curr + (tetriminoSize * 4);
+
+//fill leftZPoints and update curr
+highHeight = highHeight + tetriminoSize; //update height since start is top
+lowHeight = lowHeight + tetriminoSize; //update height since start is top
+fillPoints(leftZPoints);
+curr = curr + (leftZPoints * 4);
+
+
+function fillPoints(pointArray) {
+    pointArray.push(vec2(curr, lowHeight));
+    pointArray.push(vec2(curr, highHeight));
+    pointArray.push(vec2(curr + tetriminoSize, highHeight));
+    pointArray.push(vec2(curr + tetriminoSize, lowHeight));
+}
