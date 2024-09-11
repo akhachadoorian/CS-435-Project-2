@@ -11,8 +11,18 @@ var gl;
 var vPosition; // loc of attribute variables
 var vColor;
 var projection;
+var transformation;
+
+
+//items to print
+var seperators;
+var baseBlocks;
 
 var Blocks;
+var BlockIdToBeMoved; // this black is moving
+var MoveCount;
+var OldX;
+var OldY;
 
 var windowWidth = 725;
 var windowHeight = 600;
@@ -20,6 +30,7 @@ var windowHeight = 600;
 var tetriminoSize = 25;
 var innerSize = 5;
 var sectionSize = tetriminoSize * 4;
+
 
 
 function buildRight(color, bottomLeft, topLeft) {
@@ -80,6 +91,28 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     this.vBuffer=0;
     this.cBuffer=0;
 
+    this.OffsetX=0;
+    this.OffsetY=0;
+    this.Angle=0;
+
+    this.UpdateOffsetSub = function(dx, dy) {
+        this.OffsetX += dx;
+        this.OffsetY += dy;
+        console.log("updated " + this.OffsetX + " " + this.OffsetY);
+    }
+
+    this.SetOffset = function(dx, dy) {
+        this.OffsetX = dx;
+        this.OffsetY = dy;
+    }
+
+    // this.transform = function(x, y) {
+    //     var x2 = this.points[0][0] + (x - this.points[0][0]-this.OffsetX)  - (y - this.points[0][1]-this.OffsetY);
+    //     var y2 = this.points[0][1] + (x - this.points[0][0]-this.OffsetX) + (y - this.points[0][1]-this.OffsetY);
+    //     console.log(x2 + " " + y2);
+    //     return vec2(x2, y2);
+    // }
+
     this.init = function() {
 
         this.vBuffer = gl.createBuffer();
@@ -96,6 +129,13 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     }
 
     this.draw = function() {
+        var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0);
+        console.log("tm: " + tm);
+        tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
+        tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
+        console.log("tm2: " + tm);
+        gl.uniformMatrix4fv( transformation, gl.FALSE, flatten(tm) );
+
         //supply data for vPosition
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vBuffer );
         gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
@@ -107,10 +147,30 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
         gl.enableVertexAttribArray( vColor );
 
         gl.drawArrays( gl.TRIANGLE_FAN, 0, 4);
-        gl.drawArrays( gl.LINE_LOOP, 4, 4);
-        gl.drawArrays( gl.LINE_LOOP, 8, 4);
+        // gl.drawArrays( gl.LINE_LOOP, 4, 4);
+        // gl.drawArrays( gl.LINE_LOOP, 8, 4);
     }
 
+    this.isLeft = function(x, y, id) {	// Is Point (x, y) located to the left when walking from id to id+1?
+        var id1=(id+1)%4;
+        // console.log(this.points[id][0] + " " + this.points[id][1]);
+        return (y-this.points[id][1])*(this.points[id1][0]-this.points[id][0])<(x-this.points[id][0])*(this.points[id1][1]-this.points[id][1]);
+    }
+
+    this.isInsideSub = function(x, y) {
+        //var p=this.transform(x, y);
+        // var p = vec2(x,y);
+        for (var i=0; i<4; i++) {
+            console.log("trying for index: " + i);
+            if (!this.isLeft(x, y, i)) {
+                // console.log("false");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //GETTERS
     this.bottomLeft = function() {
         return this.points[0];
     }
@@ -139,23 +199,49 @@ function squareTetrimino(color) {
         this.squares[0].init();
 
         //create bottom right tetrimino
-        this.squares.push(buildRight(this.color, squarePoints[3], squarePoints[2]));
-        this.squares[1].init();
+        // this.squares.push(buildRight(this.color, squarePoints[3], squarePoints[2]));
+        // this.squares[1].init();
 
-        //create top left tetrimino
-        this.squares.push(buildTop(this.color, squarePoints[1], squarePoints[2]));
+        // //create top left tetrimino
+        // this.squares.push(buildTop(this.color, squarePoints[1], squarePoints[2]));
 
-        this.squares[2].init();
+        // this.squares[2].init();
 
-        //create top right tetrimino
-        this.squares.push(buildTop(this.color, this.squares[1].topLeft(), this.squares[1].topRight()));
-        this.squares[3].init();
+        // //create top right tetrimino
+        // this.squares.push(buildTop(this.color, this.squares[1].topLeft(), this.squares[1].topRight()));
+        // this.squares[3].init();
     }
 
     this.draw = function() {
-        for (var i = 0; i < 4; i++ ) {
+        console.log("inside ");
+        for (var i = 0; i < 1; i++ ) {
             this.squares[i].draw();
         }
+    }
+
+    this.isInside = function(x, y) {
+        console.log("square inside");
+
+        for (var i = 0; i < 1; i++) {
+            // console.log("trying for index: " + i);
+            var inside = this.squares[i].isInsideSub(x, y);
+            // console.log("done");
+
+            if (inside) {
+                console.log("true");
+                return true;
+            }
+        }
+        console.log("test");
+        return false;
+    }
+
+    this.UpdateOffset = function(dx, dy) {
+        this.squares[0].UpdateOffsetSub(dx, dy);
+    }
+
+    this.getColor = function() {
+        return this.color;
     }
 }
 
@@ -190,6 +276,23 @@ function lineTetrimino(color) {
             this.lines[i].draw();
         }
     }
+
+    this.isInside = function(x, y) {
+        // console.log("line inside");
+        for (var i = 0; i < 4; i++) {
+            var inside = this.lines[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
+    }
 }
 
 function rocketTetrimino(color) {
@@ -220,6 +323,24 @@ function rocketTetrimino(color) {
             this.rockets[i].draw();
         }
     }
+
+    this.isInside = function(x, y) {
+        // console.log("rockets inside");
+
+        for (var i = 0; i < 4; i++) {
+            var inside = this.rockets[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
+    }
 }
 
 function rightLTetrimino(color) {
@@ -249,6 +370,23 @@ function rightLTetrimino(color) {
             this.rightLs[i].draw();
         }
     }
+
+    this.isInside = function(x, y) {
+        // console.log("right Ls inside");
+        for (var i = 0; i < 4; i++) {
+            var inside = this.rightLs[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
+    }
 }
 
 function leftLTetrimino(color) {
@@ -276,6 +414,23 @@ function leftLTetrimino(color) {
             this.leftLs[i].draw();
         }
     }
+
+    this.isInside = function(x, y) {
+        // console.log("left Ls inside");
+        for (var i = 0; i < 4; i++) {
+            var inside = this.leftLs[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
+    }
 }
 
 function rightZTetrimino(color) {
@@ -301,6 +456,24 @@ function rightZTetrimino(color) {
         for (var i = 0; i < 4; i++) {
             this.rightZs[i].draw();
         }
+    }
+
+    this.isInside = function(x, y) {
+        // console.log("right Zs inside");
+
+        for (var i = 0; i < 4; i++) {
+            var inside = this.rightZs[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
     }
 }
 
@@ -328,6 +501,24 @@ function leftZTetrimino(color) {
         for (var i = 0; i < 4; i++) {
             this.leftZs[i].draw();
         }
+    }
+
+    this.isInside = function(x, y) {
+        // console.log("left Zs inside");
+
+        for (var i = 0; i < 4; i++) {
+            var inside = this.leftZs[i].isInsideSub(x, y);
+
+            if (inside) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    this.getColor = function() {
+        return this.color;
     }
 }
 
@@ -378,30 +569,101 @@ window.onload = function initialize() {
     gl = canvas.getContext('webgl2');
     if (!gl) alert("WebGL 2.0 isn't available");
 
+    //events
+    canvas.addEventListener("mousedown", function(event) {
+        if (event.button!=0) return; // left button only
+        var x = event.pageX - canvas.offsetLeft;
+        var y = event.pageY - canvas.offsetTop;
+        y=canvas.height-y;
+        console.log("mousedown, x=" + x + ", y=" + y);
+        for (var i=0; i>=6; i--) {	// search from last to first
+            console.log(i);
+            if (baseBlocks[i].isInside(x, y)) {
+                var temp=baseBlocks[i];
+                for (var j=i; j<6; j++) baseBlocks[j]=baseBlocks[j+1];
+                baseBlocks[6]=temp;
+                MoveCount=0;
+        OldX=x;
+        OldY=y;
+                render();
+          return;
+            }
+            // if (baseBlocks[i].isInside(x, y)) {
+            //     if (i == 0) {
+            //         console.log("block");
+            //         Blocks.push(new squareTetrimino(vec4(1.0, 0.0, 0.0, 1.0)));
+            //         Blocks[0].init();
+            //         BlockIdToBeMoved = 0;
+                    
+            //         MoveCount = 0;
+            //         OldX = x;
+            //         OldY = y;
+            //         console.log("redraw");
+            //         render();
+            //         break;
+            //     }
+            //     else if (i == 1) {
+            //         Blocks.push(new lineTetrimino(baseBlocks[i].getColor()));
+            //     }
+            //     else if (i == 2) {
+            //         Blocks.push(new rocketTetrimino(baseBlocks[i].getColor()));
+            //     }
+            //     else if (i == 3) {
+            //         Blocks.push(new rightLTetrimino(baseBlocks[i].getColor()));
+            //     }
+            //     else if (i == 4) {
+            //         Blocks.push(new leftLTetrimino(baseBlocks[i].getColor()));
+            //     }
+            //     else if (i == 5) {
+            //         Blocks.push(new rightZTetrimino(baseBlocks[i].getColor()));
+            //     }
+            //     else if (i == 6) {
+            //         Blocks.push(new leftZTetrimino(baseBlocks[i].getColor()));
+            //     }
+                
+                
+            // }
+          }
+    });
+
+    canvas.addEventListener("mouseup", function(event){
+        if (BlockIdToBeMoved>=0) {
+          BlockIdToBeMoved=-1;
+        }
+    });
+
+    canvas.addEventListener("mousemove", function(event){
+        if (BlockIdToBeMoved>=0) {  // if dragging
+          var x = event.pageX - canvas.offsetLeft;
+          var y = event.pageY - canvas.offsetTop;
+          y=canvas.height-y;
+          Blocks[BlockIdToBeMoved].UpdateOffset(x-OldX, y-OldY);
+          MoveCount++;
+          OldX=x;
+          OldY=y;
+          // window.requestAnimFrame(render);
+          render();
+        }
+      });
+
+    setup();
+    Blocks = [];
+    // for (var i=0; i<Blocks.length; i++) {
+    //     Blocks[i].init();
+    // }
+
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
 
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    Blocks=[];
-    Blocks.push(new squareTetrimino(vec4(0.7, 0.7, 0.0, 0.5)));
-    Blocks.push(new lineTetrimino(vec4(0.0, 0.0, 1.0, 0.5)));
-    Blocks.push(new rocketTetrimino(vec4(1.0, 0.0, 0.0, 0.5)));
-    Blocks.push(new rightLTetrimino(vec4(1.0, 0.2, 0.0, 0.5)));
-    Blocks.push(new leftLTetrimino(vec4(0.2, 0.0, 1.0, 0.5)));
-    Blocks.push(new rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.5)));
-    Blocks.push(new leftZTetrimino(vec4(0.8, 0.1, 0.8, 0.5)));
-
-    Blocks.push(new seperatorLine((tetriminoSize * 1)));
-
-    for (var i=0; i<Blocks.length; i++) {
-        Blocks[i].init();
-    }
-
+    BlockIdToBeMoved=-1; // no piece selected
     projection = gl.getUniformLocation( program, "projection" );
     var pm = ortho( 0.0, canvas.width, 0.0, canvas.height, -1.0, 1.0 );
     gl.uniformMatrix4fv( projection, gl.FALSE, flatten(pm) );
+
+    transformation = gl.getUniformLocation( program, "transformation" );
 
     vPosition = gl.getAttribLocation( program, "aPosition" );
     vColor = gl.getAttribLocation( program, "aColor" );
@@ -413,12 +675,48 @@ window.onload = function initialize() {
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+    for (var i=0; i<baseBlocks.length; i++) {
+        baseBlocks[i].draw();
+    }
+
     for (var i=0; i<Blocks.length; i++) {
         Blocks[i].draw();
     }
+
+    console.log("done");
+    for (var i = 0;  i < seperators.length; i++) {
+        seperators[i].draw();
+    }
+
+    return;
 }
 
-//FIXME: points
+//FIXME: Basic Setup
+function setup() {
+    baseBlocks=[];
+    baseBlocks.push(new squareTetrimino(vec4(0.7, 0.7, 0.0, 0.5)));
+    baseBlocks.push(new lineTetrimino(vec4(0.0, 0.0, 1.0, 0.5)));
+    baseBlocks.push(new rocketTetrimino(vec4(1.0, 0.0, 0.0, 0.5)));
+    baseBlocks.push(new rightLTetrimino(vec4(1.0, 0.2, 0.0, 0.5)));
+    baseBlocks.push(new leftLTetrimino(vec4(0.2, 0.0, 1.0, 0.5)));
+    baseBlocks.push(new  rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.5)));
+    baseBlocks.push(new leftZTetrimino(vec4(0.8, 0.1, 0.8, 0.5)));
+
+    for (var i=0; i<baseBlocks.length; i++) {
+        baseBlocks[i].init();
+    }
+
+    seperators  = [];
+    seperators.push(new seperatorLine(windowHeight - (tetriminoSize * 4)));
+    seperators.push(new seperatorLine(tetriminoSize * 4));
+
+    for (var i = 0;  i < seperators.length; i++) {
+        seperators[i].init();
+    }
+}
+
+
+
 var squarePoints = [];
 var linePoints = [];
 var rocketPoints = [];
@@ -460,7 +758,6 @@ highHeight = highHeight + tetriminoSize; //update height since start is top
 lowHeight = lowHeight + tetriminoSize; //update height since start is top
 fillPoints(leftZPoints);
 curr = curr + (leftZPoints * 4);
-
 
 function fillPoints(pointArray) {
     pointArray.push(vec2(curr, lowHeight));
