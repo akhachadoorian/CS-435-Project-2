@@ -14,8 +14,12 @@ var projection;
 
 var Blocks;
 
+var windowWidth = 725;
+var windowHeight = 600;
+
 var tetriminoSize = 25;
 var innerSize = 5;
+var sectionSize = tetriminoSize * 4;
 
 
 function buildRight(color, bottomLeft, topLeft) {
@@ -327,6 +331,46 @@ function leftZTetrimino(color) {
     }
 }
 
+function seperatorLine(height) {
+    this.points = [];
+    this.points.push(vec2(tetriminoSize, height));
+    this.points.push(vec2((windowWidth - tetriminoSize), height));
+    this.colors = [];
+    for (var i=0; i<2; i++) this.colors.push(vec4(0.0, 0.0, 0.0, 1.0));
+    
+    this.vBuffer=0;
+    this.cBuffer=0;
+
+    this.init = function() {
+
+        this.vBuffer = gl.createBuffer();
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.vBuffer );
+
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(this.points), gl.STATIC_DRAW );
+
+        this.cBuffer = gl.createBuffer();
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.cBuffer );
+
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(this.colors), gl.STATIC_DRAW );
+    }
+
+    this.draw = function() {
+        //supply data for vPosition
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.vBuffer );
+        gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( vPosition );
+
+        //supply data for vColor
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.cBuffer );
+        gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( vColor );
+
+        gl.drawArrays( gl.LINES, 0, 2);
+    }
+}
+
 //main
 window.onload = function initialize() {
     canvas = document.getElementById("gl-canvas");
@@ -348,6 +392,8 @@ window.onload = function initialize() {
     Blocks.push(new leftLTetrimino(vec4(0.2, 0.0, 1.0, 0.5)));
     Blocks.push(new rightZTetrimino(vec4(0.0, 1.0, 0.0, 0.5)));
     Blocks.push(new leftZTetrimino(vec4(0.8, 0.1, 0.8, 0.5)));
+
+    Blocks.push(new seperatorLine((tetriminoSize * 1)));
 
     for (var i=0; i<Blocks.length; i++) {
         Blocks[i].init();
@@ -382,8 +428,8 @@ var rightZPoints = [];
 var leftZPoints = [];
 
 var curr = tetriminoSize;
-var highHeight = 600 - (tetriminoSize * 2);
-var lowHeight = 600 - (tetriminoSize * 3);
+var highHeight = windowHeight - (tetriminoSize * 2);
+var lowHeight = windowHeight - (tetriminoSize * 3);
 
 //fill squarePoints and update curr
 fillPoints(squarePoints);
