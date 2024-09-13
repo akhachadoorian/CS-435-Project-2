@@ -243,9 +243,13 @@ function squareTetrimino(color) {
         }
     }
 
-    // this.getColor = function() {
-    //     return this.color;
-    // }
+    this.getType = function() {
+        return "square";
+    }
+
+    this.getColor = function() {
+        return this.color;
+    }
 }
 
 function lineTetrimino(color) {
@@ -297,6 +301,10 @@ function lineTetrimino(color) {
         for (var i = 0; i < 4; i++) {
             this.lines[i].UpdateOffsetTetrimino(dx, dy);
         }
+    }
+
+    this.getType = function() {
+        return "line";
     }
 
     this.getColor = function() {
@@ -353,6 +361,10 @@ function rocketTetrimino(color) {
         }
     }
 
+    this.getType = function() {
+        return "rocket";
+    }
+
     this.getColor = function() {
         return this.color;
     }
@@ -405,6 +417,10 @@ function rightLTetrimino(color) {
         }
     }
 
+    this.getType = function() {
+        return "rightL";
+    }
+
     this.getColor = function() {
         return this.color;
     }
@@ -453,6 +469,10 @@ function leftLTetrimino(color) {
         for (var i = 0; i < 4; i++) {
             this.leftLs[i].UpdateOffsetTetrimino(dx, dy);
         }
+    }
+
+    this.getType = function() {
+        return "leftL";
     }
 
     this.getColor = function() {
@@ -505,6 +525,10 @@ function rightZTetrimino(color) {
         }
     }
 
+    this.getType = function() {
+        return "rightZ";
+    }
+
     this.getColor = function() {
         return this.color;
     }
@@ -554,6 +578,10 @@ function leftZTetrimino(color) {
         for (var i = 0; i < 4; i++) {
             this.leftZs[i].UpdateOffsetTetrimino(dx, dy);
         }
+    }
+
+    this.getType = function() {
+        return "leftZ";
     }
 
     this.getColor = function() {
@@ -635,73 +663,60 @@ window.onload = function initialize() {
     //events
     canvas.addEventListener("mousedown", function(event) {
         if (event.button!=0) return; // left button only
+
+        var blocksLen = Blocks.length;
+
         var x = event.pageX - canvas.offsetLeft;
         var y = event.pageY - canvas.offsetTop;
         y=canvas.height-y;
         console.log("mousedown, x=" + x + ", y=" + y);
+        
+
+
+        //moving block to create duplicate
         for (var i=6; i>=0; i--) {	// search from last to first
             if (baseBlocks[i].isInside(x, y)) {
                 console.log("click inside");
-                // move Blocks[i] to the top
-                var temp=baseBlocks[i];
-                for (var j=i; j<6; j++) baseBlocks[j]=baseBlocks[j+1];
-                baseBlocks[6]=temp;
-                // remember the one to be moved
-                BlockIdToBeMoved=6;
-                MoveCount=0;
-                OldX=x;
-                OldY=y;
+
+                if (baseBlocks[i].getType() == "square") {
+                    Blocks.push(new squareTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                    console.log("new block created")
+                }
+                else if (baseBlocks[i].getType() == "line") {
+                    Blocks.push(new lineTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+                else if (baseBlocks[i].getType() == "rocket") {
+                    Blocks.push(new rocketTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+                else if (baseBlocks[i].getType() == "rightL") {
+                    Blocks.push(new rightLTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+                else if (baseBlocks[i].getType() == "leftL") {
+                    Blocks.push(new leftLTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+                else if (baseBlocks[i].getType() == "rightZ") {
+                    Blocks.push(new rightZTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+                else if (baseBlocks[i].getType() == "leftZ") {
+                    Blocks.push(new leftZTetrimino(baseBlocks[i].getColor()));
+                    Blocks[blocksLen].init();
+                }
+
+                BlockIdToBeMoved = blocksLen;
+                MoveCount = 0;
+                OldX = x;
+                OldY = y;
+
                 // redraw
-                // window.requestAnimFrame(render);
                 render();
                 break;
               }
-        //     console.log(i);
-        //     if (baseBlocks[i].isInside(x, y)) {
-        //         var temp=baseBlocks[i];
-        //         for (var j=i; j<6; j++) baseBlocks[j]=baseBlocks[j+1];
-        //         baseBlocks[6]=temp;
-        //         MoveCount=0;
-        // OldX=x;
-        // OldY=y;
-        //         render();
-        //   return;
-         //   }
-            // if (baseBlocks[i].isInside(x, y)) {
-            //     if (i == 0) {
-            //         console.log("block");
-            //         Blocks.push(new squareTetrimino(vec4(1.0, 0.0, 0.0, 1.0)));
-            //         Blocks[0].init();
-            //         BlockIdToBeMoved = 0;
-                    
-            //         MoveCount = 0;
-            //         OldX = x;
-            //         OldY = y;
-            //         console.log("redraw");
-            //         render();
-            //         break;
-            //     }
-            //     else if (i == 1) {
-            //         Blocks.push(new lineTetrimino(baseBlocks[i].getColor()));
-            //     }
-            //     else if (i == 2) {
-            //         Blocks.push(new rocketTetrimino(baseBlocks[i].getColor()));
-            //     }
-            //     else if (i == 3) {
-            //         Blocks.push(new rightLTetrimino(baseBlocks[i].getColor()));
-            //     }
-            //     else if (i == 4) {
-            //         Blocks.push(new leftLTetrimino(baseBlocks[i].getColor()));
-            //     }
-            //     else if (i == 5) {
-            //         Blocks.push(new rightZTetrimino(baseBlocks[i].getColor()));
-            //     }
-            //     else if (i == 6) {
-            //         Blocks.push(new leftZTetrimino(baseBlocks[i].getColor()));
-            //     }
-                
-                
-            // }
           }
     });
 
@@ -717,20 +732,16 @@ window.onload = function initialize() {
           var x = event.pageX - canvas.offsetLeft;
           var y = event.pageY - canvas.offsetTop;
           y=canvas.height-y;
-          baseBlocks[BlockIdToBeMoved].UpdateOffset(x-OldX, y-OldY);
+          Blocks[BlockIdToBeMoved].UpdateOffset(x-OldX, y-OldY);
           MoveCount++;
           OldX=x;
           OldY=y;
-          // window.requestAnimFrame(render);
           render();
         }
       });
 
     setup();
     Blocks = [];
-    // for (var i=0; i<Blocks.length; i++) {
-    //     Blocks[i].init();
-    // }
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
@@ -756,22 +767,20 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     for (var i = 0;  i < seperators.length; i++) {
-        console.log("lines " + seperators[i].getStart() + " " + seperators[i].getEnd())
+        // console.log("lines " + seperators[i].getStart() + " " + seperators[i].getEnd())
         seperators[i].draw();
-        console.log("drawing line");
+        // console.log("drawing line");
     }
-    
+
     for (var i=0; i<baseBlocks.length; i++) {
-        baseBlocks[i].draw();
         console.log("drawing base block");
+        baseBlocks[i].draw();
     }
 
     for (var i=0; i<Blocks.length; i++) {
+        console.log("drawing extra block");
         Blocks[i].draw();
     }
-
-    // console.log("done");
-   
 
     return;
 }
