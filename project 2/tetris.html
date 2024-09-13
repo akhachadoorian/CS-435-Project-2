@@ -22,13 +22,13 @@
             in vec4 aPosition;
             in vec4 aColor;
 
+            out vec4 vColor;
+
             uniform mat4 projection;
             uniform mat4 transformation;
             
-            out vec4 vColor;
-            
             void main() {
-                gl_Position = transformation * projection * aPosition;
+                gl_Position = projection * transformation * aPosition;
                 vColor = aColor;
             }
             </script>
@@ -60,10 +60,11 @@
     </head>
 
     <body>
-        <div>
-        <canvas id="gl-canvas" width="725" height="600">
-        Oops ... your browser doesn't support the HTML5 canvas element
-        </canvas>
-        </div>
+        <body>
+            <div>
+                <canvas id="gl-canvas" width="800" height="600">
+                Oops ... your browser doesn't support the HTML5 canvas element
+                </canvas>
+            </div>
     </body>
 </html>

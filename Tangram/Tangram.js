@@ -92,7 +92,7 @@ function CPiece (n, color, x0, y0, x1, y1, x2, y2, x3, y3) {
 
     this.draw = function() {
         var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0);
-        console.log("tm: " + tm);
+        // console.log("tm: " + tm);
         tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
         tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
         console.log("tm2: " + tm);
@@ -123,6 +123,8 @@ window.onload = function initialize() {
 
     gl = canvas.getContext('webgl2');
     if (!gl) alert("WebGL 2.0 isn't available");
+    
+    console.log(canvas.height);
 
     var m = document.getElementById("mymenu");
     m.selectedIndex=rotIndex;
@@ -223,6 +225,7 @@ window.onload = function initialize() {
 
   canvas.addEventListener("mouseup", function(event){
     if (BlockIdToBeMoved>=0) {
+      console.log("up");
 /*
       var x = event.pageX - canvas.offsetLeft;
       var y = event.pageY - canvas.offsetTop;

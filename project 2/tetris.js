@@ -37,7 +37,7 @@ function buildRight(color, bottomLeft, topLeft) {
     var topRight = add(topLeft, vec2(tetriminoSize, 0));
     var bottomRight = add(bottomLeft, vec2(tetriminoSize, 0));
 
-    var temp = new Tetrimino(color, bottomLeft[0], bottomLeft[1], topLeft[0], topLeft[1], topRight[0], topRight[1], bottomRight[0], bottomRight[1]);
+    var temp = new Tetrimino(color, bottomLeft[0], bottomLeft[1], bottomRight[0], bottomRight[1], topRight[0], topRight[1], topLeft[0], topLeft[1]);
 
     return temp;
 }
@@ -46,7 +46,7 @@ function buildTop(color, bottomLeft, bottomRight) {
     var topRight = add(bottomRight, vec2(0, tetriminoSize));
     var topLeft = add(bottomLeft, vec2(0, tetriminoSize));
 
-    var temp = new Tetrimino(color, bottomLeft[0], bottomLeft[1], topLeft[0], topLeft[1], topRight[0], topRight[1], bottomRight[0], bottomRight[1]);
+    var temp = new Tetrimino(color, bottomLeft[0], bottomLeft[1], bottomRight[0], bottomRight[1], topRight[0], topRight[1], topLeft[0], topLeft[1]);
 
     return temp;
 }
@@ -71,21 +71,21 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     this.colors=[];
     for (var i=0; i<4; i++) this.colors.push(color); //same color for all vertices
 
-    //do border 
-    this.points.push(vec2(x0, y0));
-    this.points.push(vec2(x1, y1));
-    this.points.push(vec2(x2, y2));
-    this.points.push(vec2(x3, y3));
-    for (var i=0; i<4; i++) this.colors.push(vec4(0.0, 0.0, 0.0, 1.0));
+    // //do border 
+    // this.points.push(vec2(x0, y0));
+    // this.points.push(vec2(x1, y1));
+    // this.points.push(vec2(x2, y2));
+    // this.points.push(vec2(x3, y3));
+    // for (var i=0; i<4; i++) this.colors.push(vec4(0.0, 0.0, 0.0, 1.0));
 
-    //inside square
-    this.points.push(vec2(x0 + innerSize, y0 + innerSize));
-    this.points.push(vec2(x1 + innerSize, y1 - innerSize));
-    this.points.push(vec2(x2 - innerSize, y2 - innerSize));
-    this.points.push(vec2(x3 - innerSize, y3 + innerSize));
-    var b = add(color, vec4(0.0, 0.0, 0.0, 0.3)); //FIXME: add another parameter for inside color?
+    // //inside square
+    // this.points.push(vec2(x0 + innerSize, y0 + innerSize));
+    // this.points.push(vec2(x1 + innerSize, y1 - innerSize));
+    // this.points.push(vec2(x2 - innerSize, y2 - innerSize));
+    // this.points.push(vec2(x3 - innerSize, y3 + innerSize));
+    // var b = add(color, vec4(0.0, 0.0, 0.0, 0.3)); //FIXME: add another parameter for inside color?
 
-    for (var i=0; i<4; i++) this.colors.push(b);
+    // for (var i=0; i<4; i++) this.colors.push(b);
 
 
     this.vBuffer=0;
@@ -130,7 +130,7 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
 
     this.draw = function() {
         var tm=translate(this.points[0][0]+this.OffsetX, this.points[0][1]+this.OffsetY, 0.0);
-        console.log("tm: " + tm);
+        // console.log("tm: " + tm);
         tm=mult(tm, rotate(this.Angle, vec3(0, 0, 1)));
         tm=mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
         console.log("tm2: " + tm);
@@ -154,7 +154,7 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     this.isLeft = function(x, y, id) {	// Is Point (x, y) located to the left when walking from id to id+1?
         var id1=(id+1)%4;
         // console.log(this.points[id][0] + " " + this.points[id][1]);
-        return (y-this.points[id][1])*(this.points[id1][0]-this.points[id][0])<(x-this.points[id][0])*(this.points[id1][1]-this.points[id][1]);
+        return (y-this.points[id][1])*(this.points[id1][0]-this.points[id][0])>(x-this.points[id][0])*(this.points[id1][1]-this.points[id][1]);
     }
 
     this.isInsideSub = function(x, y) {
@@ -176,15 +176,15 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     }
 
     this.topLeft = function() {
-        return this.points[1];
+        return this.points[3];
     }
 
     this.topRight = function() {
-        return this.points[2];
+        return this.points[1];
     }
 
     this.bottomRight = function() {
-        return this.points[3];
+        return this.points[2];
     } 
 }
 
@@ -223,7 +223,7 @@ function squareTetrimino(color) {
         console.log("square inside");
 
         for (var i = 0; i < 1; i++) {
-            // console.log("trying for index: " + i);
+            console.log("trying for index: " + i);
             var inside = this.squares[i].isInsideSub(x, y);
             // console.log("done");
 
@@ -256,7 +256,7 @@ function lineTetrimino(color) {
         this.lines[0].init();
 
         //second block
-        this.lines.push(buildRight(this.color, linePoints[3], linePoints[2]));
+        this.lines.push(buildRight(this.color, this.lines[0].bottomRight(), this.lines[0].topRight()));
         this.lines[1].init();
 
         
@@ -569,6 +569,11 @@ window.onload = function initialize() {
     gl = canvas.getContext('webgl2');
     if (!gl) alert("WebGL 2.0 isn't available");
 
+    //set width and height
+    console.log(canvas.height);
+    // windowHeight = canvas.height;
+    // windowWidth = canvas.width;
+
     //events
     canvas.addEventListener("mousedown", function(event) {
         if (event.button!=0) return; // left button only
@@ -576,18 +581,34 @@ window.onload = function initialize() {
         var y = event.pageY - canvas.offsetTop;
         y=canvas.height-y;
         console.log("mousedown, x=" + x + ", y=" + y);
-        for (var i=0; i>=6; i--) {	// search from last to first
-            console.log(i);
+        for (var i=6; i>=0; i--) {	// search from last to first
             if (baseBlocks[i].isInside(x, y)) {
+                console.log("click inside");
+                // move Blocks[i] to the top
                 var temp=baseBlocks[i];
                 for (var j=i; j<6; j++) baseBlocks[j]=baseBlocks[j+1];
                 baseBlocks[6]=temp;
+                // remember the one to be moved
+                BlockIdToBeMoved=6;
                 MoveCount=0;
-        OldX=x;
-        OldY=y;
+                OldX=x;
+                OldY=y;
+                // redraw
+                // window.requestAnimFrame(render);
                 render();
-          return;
-            }
+                break;
+              }
+        //     console.log(i);
+        //     if (baseBlocks[i].isInside(x, y)) {
+        //         var temp=baseBlocks[i];
+        //         for (var j=i; j<6; j++) baseBlocks[j]=baseBlocks[j+1];
+        //         baseBlocks[6]=temp;
+        //         MoveCount=0;
+        // OldX=x;
+        // OldY=y;
+        //         render();
+        //   return;
+         //   }
             // if (baseBlocks[i].isInside(x, y)) {
             //     if (i == 0) {
             //         console.log("block");
@@ -628,6 +649,7 @@ window.onload = function initialize() {
 
     canvas.addEventListener("mouseup", function(event){
         if (BlockIdToBeMoved>=0) {
+            console.log("up");
           BlockIdToBeMoved=-1;
         }
     });
@@ -637,7 +659,7 @@ window.onload = function initialize() {
           var x = event.pageX - canvas.offsetLeft;
           var y = event.pageY - canvas.offsetTop;
           y=canvas.height-y;
-          Blocks[BlockIdToBeMoved].UpdateOffset(x-OldX, y-OldY);
+          baseBlocks[BlockIdToBeMoved].UpdateOffset(x-OldX, y-OldY);
           MoveCount++;
           OldX=x;
           OldY=y;
@@ -683,10 +705,10 @@ function render() {
         Blocks[i].draw();
     }
 
-    console.log("done");
-    for (var i = 0;  i < seperators.length; i++) {
-        seperators[i].draw();
-    }
+    // console.log("done");
+    // for (var i = 0;  i < seperators.length; i++) {
+    //     seperators[i].draw();
+    // }
 
     return;
 }
@@ -761,7 +783,7 @@ curr = curr + (leftZPoints * 4);
 
 function fillPoints(pointArray) {
     pointArray.push(vec2(curr, lowHeight));
-    pointArray.push(vec2(curr, highHeight));
-    pointArray.push(vec2(curr + tetriminoSize, highHeight));
     pointArray.push(vec2(curr + tetriminoSize, lowHeight));
+    pointArray.push(vec2(curr + tetriminoSize, highHeight));
+    pointArray.push(vec2(curr, highHeight));
 }
