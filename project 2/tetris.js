@@ -95,7 +95,7 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     this.OffsetY=0;
     this.Angle=0;
 
-    this.UpdateOffsetSub = function(dx, dy) {
+    this.UpdateOffsetTetrimino = function(dx, dy) {
         this.OffsetX += dx;
         this.OffsetY += dy;
         console.log("updated " + this.OffsetX + " " + this.OffsetY);
@@ -157,13 +157,13 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
         return (y-this.points[id][1])*(this.points[id1][0]-this.points[id][0])>(x-this.points[id][0])*(this.points[id1][1]-this.points[id][1]);
     }
 
-    this.isInsideSub = function(x, y) {
+    this.isInsideTetrimino = function(x, y) {
         var p=this.transform(x, y);
         // var p = vec2(x,y);
         for (var i=0; i<4; i++) {
             console.log("trying for index: " + i);
             if (!this.isLeft(p[0], p[1], i)) {
-                // console.log("false");
+                console.log("false");
                 return false;
             }
         }
@@ -223,8 +223,8 @@ function squareTetrimino(color) {
         console.log("square inside");
 
         for (var i = 0; i < 4; i++) {
-            console.log("trying for index: " + i);
-            var inside = this.squares[i].isInsideSub(x, y);
+            console.log(" square trying for index: " + i);
+            var inside = this.squares[i].isInsideTetrimino(x, y);
             // console.log("done");
 
             if (inside) {
@@ -238,14 +238,14 @@ function squareTetrimino(color) {
 
     this.UpdateOffset = function(dx, dy) {
         for (var i = 0; i < 4; i++) {
-            this.squares[i].UpdateOffsetSub(dx, dy);
+            this.squares[i].UpdateOffsetTetrimino(dx, dy);
         }
         
     }
 
-    this.getColor = function() {
-        return this.color;
-    }
+    // this.getColor = function() {
+    //     return this.color;
+    // }
 }
 
 function lineTetrimino(color) {
@@ -283,7 +283,7 @@ function lineTetrimino(color) {
     this.isInside = function(x, y) {
         // console.log("line inside");
         for (var i = 0; i < 4; i++) {
-            var inside = this.lines[i].isInsideSub(x, y);
+            var inside = this.lines[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -331,7 +331,7 @@ function rocketTetrimino(color) {
         // console.log("rockets inside");
 
         for (var i = 0; i < 4; i++) {
-            var inside = this.rockets[i].isInsideSub(x, y);
+            var inside = this.rockets[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -377,7 +377,7 @@ function rightLTetrimino(color) {
     this.isInside = function(x, y) {
         // console.log("right Ls inside");
         for (var i = 0; i < 4; i++) {
-            var inside = this.rightLs[i].isInsideSub(x, y);
+            var inside = this.rightLs[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -421,7 +421,7 @@ function leftLTetrimino(color) {
     this.isInside = function(x, y) {
         // console.log("left Ls inside");
         for (var i = 0; i < 4; i++) {
-            var inside = this.leftLs[i].isInsideSub(x, y);
+            var inside = this.leftLs[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -465,7 +465,7 @@ function rightZTetrimino(color) {
         // console.log("right Zs inside");
 
         for (var i = 0; i < 4; i++) {
-            var inside = this.rightZs[i].isInsideSub(x, y);
+            var inside = this.rightZs[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -510,7 +510,7 @@ function leftZTetrimino(color) {
         // console.log("left Zs inside");
 
         for (var i = 0; i < 4; i++) {
-            var inside = this.leftZs[i].isInsideSub(x, y);
+            var inside = this.leftZs[i].isInsideTetrimino(x, y);
 
             if (inside) {
                 return true;
@@ -739,6 +739,7 @@ function setup() {
         seperators[i].init();
     }
 }
+
 
 
 
