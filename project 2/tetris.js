@@ -107,9 +107,9 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
     }
 
     this.transform = function(x, y) {
-        var x2 = this.points[0][0] + (x - this.points[0][0]-this.OffsetX)  - (y - this.points[0][1]-this.OffsetY);
-        var y2 = this.points[0][1] + (x - this.points[0][0]-this.OffsetX) + (y - this.points[0][1]-this.OffsetY);
-        console.log(x2 + " " + y2);
+        var theta = -Math.PI/180*this.Angle;	// in radians
+        var x2 = this.points[0][0] + (x - this.points[0][0]-this.OffsetX) * Math.cos(theta) - (y - this.points[0][1]-this.OffsetY) * Math.sin(theta);
+        var y2 = this.points[0][1] + (x - this.points[0][0]-this.OffsetX) * Math.sin(theta) + (y - this.points[0][1]-this.OffsetY) * Math.cos(theta);
         return vec2(x2, y2);
     }
 
@@ -153,7 +153,7 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
 
     this.isLeft = function(x, y, id) {	// Is Point (x, y) located to the left when walking from id to id+1?
         var id1 = (id + 1) % 4;
-        // console.log(this.points[id][0] + " " + this.points[id][1]);
+        console.log(this.points[id]+ " " + this.points[id1]);
         return (y-this.points[id][1])*(this.points[id1][0]-this.points[id][0])>(x-this.points[id][0])*(this.points[id1][1]-this.points[id][1]);
     }
 
@@ -161,7 +161,7 @@ function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
         var p=this.transform(x, y);
         // var p = vec2(x,y);
         for (var i=0; i<4; i++) {
-            console.log("trying for index: " + i);
+            // console.log("trying for index: " + i);
             if (!this.isLeft(p[0], p[1], i)) {
                 console.log("false");
                 return false;
@@ -221,6 +221,7 @@ function squareTetrimino(color) {
 
     this.isInside = function(x, y) {
         console.log("square inside");
+        var returnVal = false;
 
         for (var i = 0; i < 4; i++) {
             console.log(" square trying for index: " + i);
@@ -229,11 +230,11 @@ function squareTetrimino(color) {
 
             if (inside) {
                 console.log("true");
-                return true;
+                returnVal = true;
             }
         }
         console.log("test");
-        return false;
+        return returnVal;
     }
 
     this.UpdateOffset = function(dx, dy) {
