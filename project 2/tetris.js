@@ -706,7 +706,7 @@ function leftZTetrimino(color) {
         var returnVal = false;
 
         for (var i = 0; i < 4; i++) {
-            var deleteVal = this.lef[i].inDeleteTetrimino();
+            var deleteVal = this.leftZs[i].inDeleteTetrimino();
 
             if (deleteVal) {
                 // console.log("true");
