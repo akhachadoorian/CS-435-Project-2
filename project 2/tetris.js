@@ -60,11 +60,11 @@ function buildTop(color, bottomLeft, bottomRight) { //takes the tetrimino's colo
     return tetrimino;
 }
 
-
-function buildBottom(color, topLeft, topRight) {
+//build a tetrimino below the current one
+function buildBottom(color, topLeft, topRight) { //takes the tetrimino's color (vec4), point that will be top left, point that will be top right
     //calculate remaining points
-    var bottomRight = add(topRight, vec2(0, -tetriminoSize)); //bottom right will be the top right's y plus size of tetrimino
-    var bottomLeft = add(topLeft, vec2(0, -tetriminoSize));
+    var bottomRight = add(topRight, vec2(0, -tetriminoSize)); //bottom right will be the top right's y minus size of tetrimino
+    var bottomLeft = add(topLeft, vec2(0, -tetriminoSize)); //bottom left will be the top left's y minus size of tetrimino
 
     //create tetrimino
     var tetrimino = new Tetrimino(color, bottomLeft[0], bottomLeft[1], bottomRight[0], bottomRight[1], topRight[0], topRight[1],topLeft[0], topLeft[1]);
@@ -72,15 +72,16 @@ function buildBottom(color, topLeft, topRight) {
     return tetrimino;
 }
 
-function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) {
+//tetrimino class
+function Tetrimino (color, x0, y0, x1, y1, x2, y2, x3, y3) { //takes a color (vec4) and 4 points
     //class variables
-    this.color = color;
-    this.points=[]; 
+    this.color = color; //holds tetrimino color
+    this.points=[]; //holds all the tetrimino's points
     this.points.push(vec2(x0, y0)); //bottom left
     this.points.push(vec2(x1, y1)); //bottom right
     this.points.push(vec2(x2, y2)); //top right
     this.points.push(vec2(x3, y3)); //top left
-    this.colors=[];
+    this.colors=[]; //holds the points corresponding colors
     for (var i=0; i<4; i++) this.colors.push(color); //same color for all vertices
 
     //do border 
