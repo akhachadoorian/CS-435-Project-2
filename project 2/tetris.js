@@ -1,10 +1,10 @@
 /*
-CS 435
-Project 2
-Alex Khachadoorian
-This project draws the 6 tetris tetriminos and allows the user to create more to play with. 
-The user clicks on the 6 base tetris tetriminos that appear along the top to create a duplicate of the shape.
-This shape can be moved and rotated using the shift or alt key. It can also be deleted by moving it into the lower section of the canvas.
+    CS 435
+    Project 2
+    Alex Khachadoorian
+    This project draws the 6 tetris tetriminos and allows the user to create more to play with. 
+    The user clicks on the 6 base tetris tetriminos that appear along the top to create a duplicate of the shape.
+    This shape can be moved and rotated using the shift or alt key. It can also be deleted by moving it into the lower section of the canvas.
 */
 
 "use strict"
